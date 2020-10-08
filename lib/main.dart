@@ -195,7 +195,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         ),
         Padding(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: <Widget>[
               CheckboxListTileFormField(
@@ -218,20 +218,40 @@ class _SignUpPageState extends State<SignUpPage> {
             ],
           ),
         ),
-
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: MaterialButton(
-            child: Text(
-              'Register',
-              style: TextStyle(color: Colors.white),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: MaterialButton(
+                child: Text(
+                  'Register',
+                  style: TextStyle(color: Colors.white),
+                ),
+                color: Colors.lightGreen,
+                onPressed: _sendToServer,
+              ),
             ),
-            color: Colors.lightGreen,
-            onPressed: _sendToServer,
-          ),
-        ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: MaterialButton(
+                child: Text(
+                  'Clear All',
+                  style: TextStyle(color: Colors.white),
+                ),
+                color: Colors.lightGreen,
+                elevation: 4,
+                onPressed: clearForm,
+              ),
+            ),
+          ],
+        )
       ],
     );
+  }
+
+  void clearForm() {
+    _key.currentState.reset();
   }
 
   void success() {
@@ -245,7 +265,7 @@ class _SignUpPageState extends State<SignUpPage> {
     String pattern = r'(^[a-z A-Z,.\-]+$)';
     RegExp regExp = new RegExp(pattern);
     if (value.length == 0) {
-      return "NAME IS REQUIRED";
+      return "Name is Required";
     } else if (!regExp.hasMatch(value)) {
       return "Name must be a-z and A-Z";
     }
