@@ -12,16 +12,19 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   GlobalKey<FormState> _key = new GlobalKey();
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
   String fname, userid, password, email, pno;
   bool enabled = false;
   bool checked = false;
   bool _validate = false;
+  bool _passwordVisible = false;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
+          key: scaffoldKey,
           appBar: AppBar(
             title: Center(child: Text('Registration')),
             backgroundColor: Colors.lightGreen,
@@ -82,7 +85,9 @@ class _SignUpPageState extends State<SignUpPage> {
             validator: (value) {
               Pattern pattern = r'^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$';
               RegExp regex = new RegExp(pattern);
-              if (!regex.hasMatch(value))
+              if (value.length < 4)
+                return "Username too short";
+              else if (!regex.hasMatch(value))
                 return 'Invalid username';
               else
                 return null;
@@ -93,9 +98,23 @@ class _SignUpPageState extends State<SignUpPage> {
         Padding(
           padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           child: TextFormField(
+            obscureText: !_passwordVisible,
             decoration: InputDecoration(
               labelText: 'Set Password',
               prefixIcon: Icon(Icons.lock),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  // Based on passwordVisible state choose the icon
+                  _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: Theme.of(context).primaryColorDark,
+                ),
+                onPressed: () {
+                  // Update the state i.e. toogle the state of passwordVisible variable
+                  setState(() {
+                    _passwordVisible = !_passwordVisible;
+                  });
+                },
+              ),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.purple),
               ),
@@ -215,8 +234,15 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
+  void success() {
+    final snackbar = new SnackBar(
+      content: new Text("Registration Successful"),
+    );
+    scaffoldKey.currentState.showSnackBar(snackbar);
+  }
+
   String validateName(String value) {
-    String pattern = r'(^[a-zA-Z]*$)';
+    String pattern = r'(^[a-z A-Z,.\-]+$)';
     RegExp regExp = new RegExp(pattern);
     if (value.length == 0) {
       return "NAME IS REQUIRED";
@@ -257,7 +283,7 @@ class _SignUpPageState extends State<SignUpPage> {
   _sendToServer() {
     if (_key.currentState.validate()) {
       _key.currentState.save();
-      print("Registration Successful");
+      success();
     } else {
       setState(() {
         _validate = true;
